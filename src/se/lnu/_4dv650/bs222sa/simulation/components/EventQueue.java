@@ -1,9 +1,10 @@
 package se.lnu._4dv650.bs222sa.simulation.components;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class EventQueue implements QueueInput, QueueServerInput {
+public class EventQueue implements QueueInput, QueueServerInput, Iterable<SimulationEvent> {
     private final Queue<SimulationEvent> queue = new LinkedList<>();
 
     @Override
@@ -17,11 +18,12 @@ public class EventQueue implements QueueInput, QueueServerInput {
     }
 
     @Override
-    public SimulationEvent popFirst() {
+    public synchronized SimulationEvent popFirst() {
         return queue.remove();
     }
 
-//    public Queue<SimulationEvent> getQueue() {
-//        return queue;
-//    }
+    @Override
+    public Iterator<SimulationEvent> iterator() {
+        return queue.iterator();
+    }
 }
