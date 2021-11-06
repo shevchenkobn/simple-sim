@@ -49,7 +49,7 @@ public class StringPullServer implements ClockRunnable {
 
     private void tryFinishProcessing(CurrentTime time) {
         // Checking if the current event is finished.
-        if (random.next() < 1.0 / serviceTime) {
+        if (random.nextBoolTimeNormalized(time.getTickSize(), serviceTime)) {
             currentProcessing.finishServing(time.getCurrentTime());
             departed.add(currentProcessing);
             currentProcessing = null;

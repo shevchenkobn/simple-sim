@@ -24,7 +24,7 @@ public class QueueProducer implements ClockRunnable {
     @Override
     public void updateOnTick(CurrentTime time) {
         // Checking if the event is to be produced.
-        if (random.next() < 1.0 / arrivalInterval) {
+        if (random.nextBoolTimeNormalized(time.getTickSize(), arrivalInterval)) {
             queue.enqueue(new SimulationEvent(Integer.toString(eventsProduced), time.getCurrentTime()));
             eventsProduced += 1;
         }

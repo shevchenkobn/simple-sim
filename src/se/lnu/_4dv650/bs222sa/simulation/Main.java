@@ -4,59 +4,82 @@ import se.lnu._4dv650.bs222sa.simulation.components.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.ToIntFunction;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
+    private static final int timeTickSize = 1;
+    private static final int arrivalInterval = 10;
+    private static final int serviceTime = 15;
+
+    private static EventQueue queue;
+    private static Clock clock;
+    private static SimulationRandom random;
+    private static DepartedCollector departedCollector;
+    private static List<StringPullServer> servers;
+    private static ClockRunner clockRunner;
+
+    private static ArrayList<SimulationEvent> allEvents;
+    private static ArrayList<SimulationEvent> departedEvents;
+    private static ArrayList<SimulationEvent> startedProcessingEvents;
 
     public static void main(String[] args) {
-        final var arrivalInterval = 10;
-        final var serviceTime = 15;
+        initializeSimulation();
+        runSimulation();
+        groupEvents();
+        printSimulationMetrics();
+    }
 
-        var queue = new EventQueue();
-	    var clock = new Clock(0, 1);
-        var random = new SimulationRandom();
-        var departedCollector = new DepartedCollector();
+    private static void initializeSimulation() {
+        queue = new EventQueue();
+        clock = new Clock(0, timeTickSize);
+        random = new SimulationRandom();
+        departedCollector = new DepartedCollector();
 
-        var servers = Arrays.asList(
+        servers = Arrays.asList(
                 new StringPullServer(random, serviceTime, queue, departedCollector),
                 new StringPullServer(random, serviceTime, queue, departedCollector)
         );
 
-        var clockRunner = new ClockRunner(clock, Stream.concat(Stream.of(
+        clockRunner = new ClockRunner(clock, Stream.concat(Stream.of(
                 new QueueProducer(random, arrivalInterval, queue)
         ), servers.stream()).collect(Collectors.toList()));
+    }
 
+    private static void runSimulation() {
         while (clock.getCurrentTime() < 22000) {
             clockRunner.tick();
         }
+    }
 
-        var allEvents = new ArrayList<SimulationEvent>();
-        var departed = new ArrayList<SimulationEvent>();
-        var startedProcessing = new ArrayList<SimulationEvent>();
+    private static void groupEvents() {
+        allEvents = new ArrayList<SimulationEvent>();
+        departedEvents = new ArrayList<SimulationEvent>();
+        startedProcessingEvents = new ArrayList<SimulationEvent>();
         queue.forEach(allEvents::add);
         for (var server : servers) {
             if (server.getCurrentProcessing() != null) {
                 allEvents.add(server.getCurrentProcessing());
-                startedProcessing.add(server.getCurrentProcessing());
+                startedProcessingEvents.add(server.getCurrentProcessing());
             }
         }
-        departedCollector.forEach(departed::add);
+        departedCollector.forEach(departedEvents::add);
         departedCollector.forEach(allEvents::add);
-        departedCollector.forEach(startedProcessing::add);
+        departedCollector.forEach(startedProcessingEvents::add);
+    }
 
+    private static void printSimulationMetrics() {
         {
-            allEvents.sort((a, b) -> a.getArrivalTime() - b.getArrivalTime());
+            allEvents.sort(Comparator.comparingInt(SimulationEvent::getArrivalTime));
             var sum = 0;
             for (var i = 1; i < allEvents.size(); i += 1) {
                 sum += allEvents.get(i).getArrivalTime() - allEvents.get(i - 1).getArrivalTime();
             }
-            System.out.println(String.format("Average arrival time: %f minutes.", sum / (double)(allEvents.size() - 1)));
+            System.out.printf("Average arrival time: %f minutes.%n", sum / (double) (allEvents.size() - 1));
         }
-        System.out.println(String.format("Average time in queue: %f minutes.", startedProcessing.stream().mapToInt(SimulationEvent::getDelayInQueue).sum() / (double)startedProcessing.size()));
-        System.out.println(String.format("Average service time: %f minutes.", departed.stream().mapToInt(SimulationEvent::getServiceTime).sum() / (double)departed.size()));
+        System.out.printf("Average time in queue: %f minutes.%n", startedProcessingEvents.stream().mapToInt(SimulationEvent::getDelayInQueue).sum() / (double) startedProcessingEvents.size());
+        System.out.printf("Average service time: %f minutes.%n", departedEvents.stream().mapToInt(SimulationEvent::getServiceTime).sum() / (double) departedEvents.size());
     }
 }
