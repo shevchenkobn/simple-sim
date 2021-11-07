@@ -18,6 +18,6 @@ public class StatisticsCollector implements ClockRunnable {
 
     @Override
     public void updateOnTick(CurrentTime time) {
-        averageQueueSize = (averageQueueSize * (time.getTimeElapsed() - 1) + this.queue.size()) / time.getTimeElapsed();
+        averageQueueSize = (averageQueueSize * (time.getTicksElapsed() - 1) + this.queue.size()) / time.getTicksElapsed();
     }
 }
