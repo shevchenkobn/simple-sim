@@ -1,13 +1,15 @@
-Average arrival time: 10.852419 minutes.
-Average event waiting time in queue (before processing starts): 12.602861 minutes.
-Average service time: 14.678519 minutes.
+Average inter-arrival time: 10.826280 minutes.
+Average event waiting time in queue (before processing starts): 13.711122 minutes.
+Average service time: 14.767717 minutes.
 
-Average queue size: 1.161182.
-Average servers utilization (%): 67.579545 (66.46818181818182, 68.69090909090909).
+Average queue size: 1.266455.
+Average servers utilization (%): 68.200000 (67.62272727272727, 68.77727272727273).
 
 Total time required: 22000 minutes.
-Total events produced: 2027.
-Total processed (departed) events: 2025.
+Total events produced: 2033.
+Total processed (departed) events: 2032.
 
-Currently events in progress (being processed by servers): 2.
-Currently events in queue (waiting for processing by servers): 0.
+Current events in progress (being processed by servers): 0.
+Current events in queue (waiting for processing by servers): 1.
+
+Process finished with exit code 0

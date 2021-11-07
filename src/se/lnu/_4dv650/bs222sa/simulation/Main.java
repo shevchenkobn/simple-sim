@@ -101,9 +101,9 @@ public class Main {
             for (var i = 1; i < allEvents.size(); i += 1) {
                 sum += allEvents.get(i).getArrivalTime() - allEvents.get(i - 1).getArrivalTime();
             }
-            out.printf("Average arrival time: %f minutes.%n", sum / (double) (allEvents.size() - 1));
+            out.printf("Average inter-arrival time: %f minutes.%n", sum / (double) (allEvents.size() - 1));
         }
-        out.printf("Average event waiting time in queue (before processing starts): %f minutes.%n", startedProcessingEvents.stream().mapToInt(SimulationEvent::getDelayInQueue).sum() / (double) startedProcessingEvents.size());
+        out.printf("Average event waiting time in queue (before processing starts): %f minutes.%n", startedProcessingEvents.stream().mapToInt(SimulationEvent::getDelayInQueue).average().getAsDouble());
         out.printf("Average service time: %f minutes.%n", departedEvents.stream().mapToInt(SimulationEvent::getServiceTime).sum() / (double) departedEvents.size());
         out.println();
         out.printf("Average queue size: %f.%n", statisticsCollector.getAverageQueueSize());
@@ -113,8 +113,8 @@ public class Main {
         out.printf("Total events produced: %d.%n", queueProducer.getEventsProduced());
         out.printf("Total processed (departed) events: %d.%n", departedCollector.eventsCount());
         out.println();
-        out.printf("Currently events in progress (being processed by servers): %d.%n", eventsInProgress.size());
-        out.printf("Currently events in queue (waiting for processing by servers): %d.%n", queue.size());
+        out.printf("Current events in progress (being processed by servers): %d.%n", eventsInProgress.size());
+        out.printf("Current events in queue (waiting for processing by servers): %d.%n", queue.size());
     }
 
     private static Double getServerUtilization(StringPullServer s) {
