@@ -24,6 +24,11 @@ public class Clock implements CurrentTime {
         return tickSize;
     }
 
+    @Override
+    public int getStartTime() {
+        return startTime;
+    }
+
     public synchronized int tick() {
         currentTime += tickSize;
         return currentTime;

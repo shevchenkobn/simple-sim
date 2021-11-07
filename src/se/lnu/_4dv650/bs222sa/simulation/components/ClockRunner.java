@@ -5,24 +5,31 @@ import java.util.Collections;
 
 public class ClockRunner {
     private final Clock clock;
-    private final ArrayList<ClockRunnable> runnables;
+    private final ArrayList<ClockRunnable> shufflableRunnables;
+    private final Iterable<ClockRunnable> postRunnables;
 
-    public ClockRunner(Clock clock, Iterable<ClockRunnable> runnables) {
+    public ClockRunner(Clock clock, Iterable<ClockRunnable> shufflableRunnables, Iterable<ClockRunnable> postRunnables) {
         this.clock = clock;
-        this.runnables = new ArrayList<>();
-        runnables.forEach(this.runnables::add);
+        this.shufflableRunnables = new ArrayList<>();
+        shufflableRunnables.forEach(this.shufflableRunnables::add);
+        this.postRunnables = postRunnables;
     }
 
-    public Iterable<ClockRunnable> getRunnables() {
-        return runnables;
+    public Iterable<ClockRunnable> getShufflableRunnables() {
+        return shufflableRunnables;
     }
 
     public synchronized ClockRunner tick() {
         // Shuffling is used to avoid the first one getting all the load and simulate randomness of load-balancing.
-        Collections.shuffle(runnables);
+        Collections.shuffle(shufflableRunnables);
         clock.tick();
-        for (var runnable : runnables) {
+        for (var runnable : shufflableRunnables) {
             runnable.updateOnTick(clock);
+        }
+        if (postRunnables != null) {
+            for (var runnable : postRunnables) {
+                runnable.updateOnTick(clock);
+            }
         }
         return this;
     }

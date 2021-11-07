@@ -4,6 +4,7 @@ public class QueueProducer implements ClockRunnable {
     private final SimulationRandom random;
     private final int arrivalInterval;
     private final QueueInput queue;
+    private int nextEventTime = Integer.MIN_VALUE;
     private int eventsProduced = 0;
 
     public QueueProducer(SimulationRandom random, int arriveInterval, QueueInput queue) {
@@ -24,7 +25,10 @@ public class QueueProducer implements ClockRunnable {
     @Override
     public void updateOnTick(CurrentTime time) {
         // Checking if the event is to be produced.
-        if (random.nextBoolTimeNormalized(time.getTickSize(), arrivalInterval)) {
+        if (time.getCurrentTime() > nextEventTime) {
+            nextEventTime = time.getCurrentTime() + random.nextIntExponential(arrivalInterval);
+        }
+        if (nextEventTime == time.getCurrentTime()) {
             queue.enqueue(new SimulationEvent(Integer.toString(eventsProduced), time.getCurrentTime()));
             eventsProduced += 1;
         }

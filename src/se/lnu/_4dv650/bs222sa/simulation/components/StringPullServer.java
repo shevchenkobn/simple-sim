@@ -6,6 +6,8 @@ public class StringPullServer implements ClockRunnable {
     private final QueueServerInput queue;
     private final DepartedCollector departed;
     private SimulationEvent currentProcessing;
+    private int currentProcessingTime = Integer.MIN_VALUE;
+    private int busyTime;
 
     public StringPullServer(SimulationRandom random, int serviceTime, QueueServerInput queue, DepartedCollector departed) {
         if (random == null) {
@@ -30,6 +32,10 @@ public class StringPullServer implements ClockRunnable {
         return currentProcessing;
     }
 
+    public int getBusyTime() {
+        return busyTime;
+    }
+
     @Override
     public void updateOnTick(CurrentTime time) {
         if (currentProcessing != null) {
@@ -37,6 +43,7 @@ public class StringPullServer implements ClockRunnable {
         } else {
             tryStartProcessing(time);
         }
+        updateMetrics(time);
     }
 
     private void tryStartProcessing(CurrentTime time) {
@@ -45,14 +52,21 @@ public class StringPullServer implements ClockRunnable {
         }
         currentProcessing = queue.popFirst();
         currentProcessing.startServing(time.getCurrentTime());
+        currentProcessingTime = time.getCurrentTime() + random.nextIntExponential(serviceTime);
     }
 
     private void tryFinishProcessing(CurrentTime time) {
-        // Checking if the current event is finished.
-        if (random.nextBoolTimeNormalized(time.getTickSize(), serviceTime)) {
+        if (time.getCurrentTime() >= currentProcessingTime) {
             currentProcessing.finishServing(time.getCurrentTime());
             departed.add(currentProcessing);
             currentProcessing = null;
+            currentProcessingTime = Integer.MIN_VALUE;
+        }
+    }
+
+    private void updateMetrics(CurrentTime time) {
+        if (currentProcessing != null) {
+            busyTime += time.getTickSize();
         }
     }
 }

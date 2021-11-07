@@ -11,6 +11,10 @@ public class DepartedCollector implements Iterable<SimulationEvent> {
         return events.iterator();
     }
 
+    public int eventsCount() {
+        return events.size();
+    }
+
     public synchronized DepartedCollector add(SimulationEvent event) {
         events.add(event);
         return this;

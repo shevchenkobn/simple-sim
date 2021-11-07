@@ -13,6 +13,11 @@ public class EventQueue implements QueueInput, QueueServerInput, Iterable<Simula
     }
 
     @Override
+    public int size() {
+        return queue.size();
+    }
+
+    @Override
     public boolean isEmpty() {
         return queue.isEmpty();
     }
