@@ -56,7 +56,7 @@ The value R<sub>i</sub> for the implementation is produced by a Java implementat
 There 2 alternative stopping conditions:
 - time-based - when the required time comes;
 - event-based - when the required amount of events is departed.
-  The condition can be changed by commenting strictly one line from lines 72 - 73 of `se.lnu._4dv650.bs222sa.simulation.Main`.
+  The condition can be changed by commenting strictly one line from lines 63 - 64 of `se.lnu._4dv650.bs222sa.simulation.SimulationRun`.
 
 ### How do you advance the time?
 The simulation runs uses **fixed-increment time advance**. However, the inter-arrival and service times are the multiple of the fixed-increment, so the actual changes happen only when next most imminent event comes. The fixed-increment time-advance approach was chosen because of easier and more flexible design.
