@@ -70,7 +70,7 @@ public class Main {
 
     private static void runSimulation() {
 //        while (departedCollector.eventsCount() <= 1e6) {
-        while (clock.getCurrentTime() < 22e3) {
+        while (clock.getCurrentTime() < 120960) {
             clockRunner.tick();
         }
     }
