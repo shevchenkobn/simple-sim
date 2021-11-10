@@ -73,4 +73,20 @@ public class SimulationEvent {
         }
         return serviceFinishTime - serviceStartTime;
     }
+
+    public String toReadableString() {
+        var builder = new StringBuilder("{ ")
+                .append("state = ").append(state.toString()).append(", ")
+                .append("id = '").append(id).append("', ")
+                .append("arrivalTime = ").append(arrivalTime);
+        if (state == SimulationEventState.Serving || state == SimulationEventState.Departed) {
+                builder.append(", ").append("serviceStartTime = ").append(serviceStartTime);
+                if (state == SimulationEventState.Departed) {
+                    builder.append(", ").append("serviceFinishTime = ").append(serviceFinishTime).append(", ")
+                            .append("serviceTime = ").append(getServiceTime());
+                }
+        }
+        builder.append(" }");
+        return builder.toString();
+    }
 }

@@ -46,6 +46,7 @@ public class Main {
         runSimulation();
         System.out.println("Finished simulation. Counting metrics...");
         groupEvents();
+        printEvents();
         printSimulationMetrics();
     }
 
@@ -92,11 +93,11 @@ public class Main {
         departedCollector.forEach(departedEvents::add);
         departedCollector.forEach(allEvents::add);
         departedCollector.forEach(startedProcessingEvents::add);
+        allEvents.sort(Comparator.comparingInt(SimulationEvent::getArrivalTime));
     }
 
     private static void printSimulationMetrics() {
         {
-            allEvents.sort(Comparator.comparingInt(SimulationEvent::getArrivalTime));
             var sum = 0;
             for (var i = 1; i < allEvents.size(); i += 1) {
                 sum += allEvents.get(i).getArrivalTime() - allEvents.get(i - 1).getArrivalTime();
@@ -115,6 +116,13 @@ public class Main {
         out.println();
         out.printf("Current events in progress (being processed by servers): %d.%n", eventsInProgress.size());
         out.printf("Current events in queue (waiting for processing by servers): %d.%n", queue.size());
+    }
+
+    private static void printEvents() {
+        for (var event : allEvents) {
+            out.println(event.toReadableString());
+        }
+        out.println();
     }
 
     private static Double getServerUtilization(StringPullServer s) {
